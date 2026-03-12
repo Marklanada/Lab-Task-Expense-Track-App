@@ -10,6 +10,9 @@ class ExpenseProvider extends ChangeNotifier {
     Expense(id: '1', title: 'Groceries',       amount: 850.00),
     Expense(id: '2', title: 'Electricity Bill', amount: 1240.00),
     Expense(id: '3', title: 'Coffee',           amount: 150.00),
+    Expense(id: '4', title: 'Internet',         amount: 999.00),
+    Expense(id: '5', title: 'Gym Membership',   amount: 500.00),
+    Expense(id: '6', title: 'Taxi',             amount: 320.00),
   ];
 
   // Returns an unmodifiable copy so the list
