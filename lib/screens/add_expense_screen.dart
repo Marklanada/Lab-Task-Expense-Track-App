@@ -2,6 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/expense_provider.dart';
 
+// ── Color Palette (from image) ───────────────────
+const Color kBlue       = Color(0xFF1155CC);
+const Color kBlueMid    = Color(0xFF2979FF);
+const Color kBgGrey     = Color(0xFFEEF2F7);
+const Color kCard       = Color(0xFFFFFFFF);
+const Color kGreen      = Color(0xFF00BFA5);
+const Color kRed        = Color(0xFFFF1744);
+const Color kTextDark   = Color(0xFF0D1B3E);
+const Color kTextGrey   = Color(0xFF8A94A6);
+
 class AddExpenseScreen extends StatefulWidget {
   final String? expenseId;
   final String? initialTitle;
@@ -84,9 +94,10 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(widget.isEditMode ? 'Updated: $title' : 'Added: $title'),
-        backgroundColor: Colors.indigo,
+        backgroundColor: kGreen,
         behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10)),
       ),
     );
   }
@@ -94,16 +105,17 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: kBgGrey,
       appBar: AppBar(
         title: Text(
           widget.isEditMode ? 'Edit Expense' : 'Add Expense',
-          style: const TextStyle(fontWeight: FontWeight.bold),
+          style: const TextStyle(
+              fontWeight: FontWeight.bold, color: kCard, fontSize: 20),
         ),
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black,
+        backgroundColor: kBlue,
+        foregroundColor: kCard,
         elevation: 0,
-        surfaceTintColor: Colors.white,
+        surfaceTintColor: kBlue,
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
@@ -116,15 +128,28 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
             TextField(
               controller: _titleController,
               autofocus: !widget.isEditMode,
+              style: const TextStyle(color: kTextDark),
               decoration: InputDecoration(
                 labelText: 'Expense Title',
+                labelStyle: const TextStyle(color: kBlueMid),
                 hintText: 'e.g. Coffee, Groceries, Rent...',
-                prefixIcon: const Icon(Icons.label_outline),
+                hintStyle: const TextStyle(color: kTextGrey),
+                prefixIcon:
+                    const Icon(Icons.label_outline, color: kBlueMid),
                 errorText: _titleError,
                 filled: true,
-                fillColor: Colors.white,
+                fillColor: kCard,
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: const BorderSide(color: kBlue, width: 2),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(
+                      color: kTextGrey.withOpacity(0.35), width: 1.5),
+                ),
                 border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10)),
+                    borderRadius: BorderRadius.circular(12)),
               ),
               onChanged: (_) {
                 if (_titleError != null) setState(() => _titleError = null);
@@ -138,18 +163,33 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
               controller: _amountController,
               keyboardType:
                   const TextInputType.numberWithOptions(decimal: true),
+              style: const TextStyle(color: kTextDark),
               decoration: InputDecoration(
                 labelText: 'Amount',
+                labelStyle: const TextStyle(color: kBlueMid),
                 hintText: '0.00',
+                hintStyle: const TextStyle(color: kTextGrey),
                 prefixText: 'P  ',
+                prefixStyle: const TextStyle(
+                    color: kBlue, fontWeight: FontWeight.bold),
                 errorText: _amountError,
                 filled: true,
-                fillColor: Colors.white,
+                fillColor: kCard,
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: const BorderSide(color: kBlue, width: 2),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(
+                      color: kTextGrey.withOpacity(0.35), width: 1.5),
+                ),
                 border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10)),
+                    borderRadius: BorderRadius.circular(12)),
               ),
               onChanged: (_) {
-                if (_amountError != null) setState(() => _amountError = null);
+                if (_amountError != null)
+                  setState(() => _amountError = null);
               },
             ),
 
@@ -165,11 +205,13 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                     fontSize: 15, fontWeight: FontWeight.bold),
               ),
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.indigo,
-                foregroundColor: Colors.white,
+                backgroundColor: kBlue,
+                foregroundColor: kCard,
                 padding: const EdgeInsets.symmetric(vertical: 14),
                 shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10)),
+                    borderRadius: BorderRadius.circular(12)),
+                elevation: 4,
+                shadowColor: kBlue.withOpacity(0.4),
               ),
             ),
 
@@ -179,13 +221,15 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
             OutlinedButton(
               onPressed: () => Navigator.pop(context),
               style: OutlinedButton.styleFrom(
-                foregroundColor: Colors.indigo,
-                side: const BorderSide(color: Colors.indigo),
+                foregroundColor: kBlue,
+                side: const BorderSide(color: kBlue, width: 1.5),
                 padding: const EdgeInsets.symmetric(vertical: 14),
                 shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10)),
+                    borderRadius: BorderRadius.circular(12)),
               ),
-              child: const Text('Cancel', style: TextStyle(fontSize: 15)),
+              child: const Text('Cancel',
+                  style: TextStyle(
+                      fontSize: 15, fontWeight: FontWeight.w600)),
             ),
           ],
         ),

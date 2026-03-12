@@ -3,6 +3,17 @@ import 'package:provider/provider.dart';
 import '../providers/expense_provider.dart';
 import 'add_expense_screen.dart';
 
+// ── Color Palette (from image) ───────────────────
+const Color kBlue       = Color(0xFF1155CC); // Bright Royal Blue — header, FAB
+const Color kBlueMid    = Color(0xFF2979FF); // Lighter Blue — gradient, accents
+const Color kBgGrey     = Color(0xFFEEF2F7); // Light Grey-Blue — background
+const Color kCard       = Color(0xFFFFFFFF); // White — cards
+const Color kGreen      = Color(0xFF00BFA5); // Teal Green — positive amounts
+const Color kRed        = Color(0xFFFF1744); // Vivid Red — delete, negative
+const Color kOrange     = Color(0xFFFF6D00); // Orange — icon accent
+const Color kTextDark   = Color(0xFF0D1B3E); // Very Dark Navy — titles
+const Color kTextGrey   = Color(0xFF8A94A6); // Muted Grey — subtitles, hints
+
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
@@ -11,20 +22,26 @@ class HomeScreen extends StatelessWidget {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        backgroundColor: Colors.white,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        backgroundColor: kCard,
+        shape:
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         title: const Text('Delete Expense',
-            style: TextStyle(fontWeight: FontWeight.bold)),
-        content: Text('Remove "$title"?'),
+            style: TextStyle(
+                fontWeight: FontWeight.bold, color: kTextDark)),
+        content: Text('Remove "$title"?',
+            style: const TextStyle(color: kTextGrey)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Cancel'),
+            child: const Text('Cancel',
+                style: TextStyle(color: kBlueMid)),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.red,
-              foregroundColor: Colors.white,
+              backgroundColor: kRed,
+              foregroundColor: kCard,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8)),
             ),
             onPressed: () => Navigator.pop(ctx, true),
             child: const Text('Delete'),
@@ -38,9 +55,10 @@ class HomeScreen extends StatelessWidget {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Deleted: $title'),
-          backgroundColor: Colors.red,
+          backgroundColor: kRed,
           behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10)),
         ),
       );
     }
@@ -70,43 +88,76 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: kBgGrey,
       appBar: AppBar(
         title: const Text(
           'Expense Tracker',
-          style: TextStyle(fontWeight: FontWeight.bold),
+          style: TextStyle(
+              fontWeight: FontWeight.bold, color: kCard, fontSize: 20),
         ),
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black,
+        backgroundColor: kBlue,
+        foregroundColor: kCard,
         elevation: 0,
-        surfaceTintColor: Colors.white,
+        surfaceTintColor: kBlue,
       ),
       body: Column(
         children: [
-          // Total Card
+          // ── Total Card ──────────────────────────
           Consumer<ExpenseProvider>(
             builder: (context, provider, _) => Container(
               width: double.infinity,
               margin: const EdgeInsets.all(16),
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+              padding: const EdgeInsets.symmetric(
+                  horizontal: 24, vertical: 22),
               decoration: BoxDecoration(
-                color: Colors.indigo,
-                borderRadius: BorderRadius.circular(12),
+                gradient: const LinearGradient(
+                  colors: [kBlue, kBlueMid],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: [
+                  BoxShadow(
+                    color: kBlue.withOpacity(0.45),
+                    blurRadius: 18,
+                    offset: const Offset(0, 8),
+                  ),
+                ],
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Text(
                     'Total Expenses',
-                    style: TextStyle(color: Colors.white70, fontSize: 13),
+                    style: TextStyle(
+                        color: Colors.white60,
+                        fontSize: 13,
+                        letterSpacing: 0.5),
                   ),
-                  const SizedBox(height: 4),
+                  const SizedBox(height: 8),
                   Text(
                     'P${provider.total.toStringAsFixed(2)}',
                     style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 28,
+                      color: kCard,
+                      fontSize: 34,
                       fontWeight: FontWeight.bold,
+                      letterSpacing: -0.5,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 12, vertical: 5),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.18),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Text(
+                      '${provider.expenses.length} item(s)',
+                      style: const TextStyle(
+                          color: kCard,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600),
                     ),
                   ),
                 ],
@@ -114,68 +165,100 @@ class HomeScreen extends StatelessWidget {
             ),
           ),
 
-          // Expense List
+          // ── Expense List ────────────────────────
           Expanded(
             child: Consumer<ExpenseProvider>(
               builder: (context, provider, _) {
                 final expenses = provider.expenses;
 
                 if (expenses.isEmpty) {
-                  return const Center(
+                  return Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(Icons.receipt_long,
-                            size: 64, color: Colors.black26),
-                        SizedBox(height: 12),
-                        Text('No expenses yet.',
+                        Container(
+                          padding: const EdgeInsets.all(24),
+                          decoration: BoxDecoration(
+                            color: kBlue.withOpacity(0.08),
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(Icons.receipt_long,
+                              size: 56, color: kBlue),
+                        ),
+                        const SizedBox(height: 16),
+                        const Text('No expenses yet.',
                             style: TextStyle(
-                                color: Colors.black45, fontSize: 16)),
-                        SizedBox(height: 4),
-                        Text('Tap + to add one.',
+                                color: kTextDark,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600)),
+                        const SizedBox(height: 4),
+                        const Text('Tap + to add one.',
                             style: TextStyle(
-                                color: Colors.black38, fontSize: 13)),
+                                color: kTextGrey, fontSize: 13)),
                       ],
                     ),
                   );
                 }
 
+                // icon colors cycling like the app in image
+                final List<Color> iconColors = [
+                  kOrange,
+                  kGreen,
+                  kBlue,
+                  kRed,
+                  const Color(0xFF9C27B0),
+                  const Color(0xFF00ACC1),
+                ];
+
                 return ListView.separated(
                   padding: const EdgeInsets.fromLTRB(16, 0, 16, 100),
                   itemCount: expenses.length,
-                  separatorBuilder: (_, __) => const SizedBox(height: 8),
+                  separatorBuilder: (_, __) =>
+                      const SizedBox(height: 10),
                   itemBuilder: (context, index) {
                     final expense = expenses[index];
+                    final iconColor =
+                        iconColors[index % iconColors.length];
                     return Card(
-                      color: Colors.white,
-                      elevation: 1,
+                      color: kCard,
+                      elevation: 0,
                       shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10)),
+                          borderRadius: BorderRadius.circular(14)),
                       child: ListTile(
                         contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 16, vertical: 6),
-                        leading: CircleAvatar(
-                          backgroundColor: Colors.indigo.shade50,
-                          child: const Text('P',
+                            horizontal: 16, vertical: 8),
+                        leading: Container(
+                          width: 46,
+                          height: 46,
+                          decoration: BoxDecoration(
+                            color: iconColor.withOpacity(0.12),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          alignment: Alignment.center,
+                          child: Text('P',
                               style: TextStyle(
-                                  color: Colors.indigo,
-                                  fontWeight: FontWeight.bold)),
+                                  color: iconColor,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 17)),
                         ),
                         title: Text(expense.title,
                             style: const TextStyle(
-                                fontWeight: FontWeight.w600)),
+                                fontWeight: FontWeight.w700,
+                                color: kTextDark,
+                                fontSize: 15)),
                         subtitle: Text(
                           'P${expense.amount.toStringAsFixed(2)}',
                           style: const TextStyle(
-                              color: Colors.green,
-                              fontWeight: FontWeight.w600),
+                              color: kGreen,
+                              fontWeight: FontWeight.w700,
+                              fontSize: 14),
                         ),
                         trailing: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             IconButton(
                               icon: const Icon(Icons.edit_outlined,
-                                  color: Colors.indigo),
+                                  color: kBlueMid, size: 22),
                               tooltip: 'Edit',
                               onPressed: () => _openEditScreen(
                                   context,
@@ -185,7 +268,7 @@ class HomeScreen extends StatelessWidget {
                             ),
                             IconButton(
                               icon: const Icon(Icons.delete_outline,
-                                  color: Colors.red),
+                                  color: kRed, size: 22),
                               tooltip: 'Delete',
                               onPressed: () => _confirmDelete(
                                   context, expense.id, expense.title),
@@ -203,8 +286,9 @@ class HomeScreen extends StatelessWidget {
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _openAddScreen(context),
-        backgroundColor: Colors.indigo,
-        foregroundColor: Colors.white,
+        backgroundColor: kBlue,
+        foregroundColor: kCard,
+        elevation: 6,
         icon: const Icon(Icons.add),
         label: const Text('Add Expense',
             style: TextStyle(fontWeight: FontWeight.bold)),
